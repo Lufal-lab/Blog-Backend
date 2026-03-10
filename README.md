@@ -1,12 +1,53 @@
-# AvanzaTech Blog Platform API
+# Blog Platform API
 
 ## Project Name
-avanzatech_blog
+blog_project
 
 ## Project Description
-avanzatech_blog is a RESTful API built with Django and Django Rest Framework that implements a blogging platform with authentication, team-based permissions, likes, comments, and administrative control.
+blog_project is a RESTful API built with **Django** and **Django Rest Framework** that implements a blogging platform with authentication, team-based permissions, likes, comments, and administrative control.
 
-The project focuses on correct permission handling, clean architecture, and full test coverage according to the lab requirements.
+The project focuses on correct permission handling, clean architecture, and 100% test coverage for mission-critical logic.
+
+## Architecture (C4 Model)
+
+### Level 1: System Context
+This diagram shows how different users interact with the Blog API and external services.
+```mermaid
+graph TD
+    %% Entities
+    Anonymous((Anonymous User))
+    AuthUser((Authenticated User))
+    Admin((Administrator))
+
+    System[("Blog Platform System")]
+
+    %% Relationships
+    Anonymous -- "View public posts with their comments and likes (details)." --> System
+
+    AuthUser -- "Creates posts and defines editing and visibility permissions." --> System
+    AuthUser -- "Views posts based on read visibility levels (public, authenticated users, team)" --> System
+    AuthUser -- "Interacts (Likes/Comments) with accessible posts" --> System
+    
+    Admin -- "Bypasses all privacy restrictions and manages teams" --> System
+```
+### Level 2: Containers View
+This diagram ilustrates the internal parts of the system and how the Backend (Django) serves the Frontend (Angular) and persists data.
+```mermaid
+graph LR
+   User((User / Author)) -- "Interacts via browser" --> Angular
+    
+    subgraph "Blog Platform System"
+        Angular[("Web Application (Angular)")]
+        
+        API[("API Application (Django / DRF)")]
+        
+        DB[("Database (PostgreSQL)")]
+        
+        %% Communication
+        Angular -- "API Requests (Cookie Auth)" --> API
+        API -- "Read/Write SQL" --> DB
+    end
+```
 
 ## Tech Stack
 - Python 3.12.3
