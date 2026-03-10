@@ -68,24 +68,43 @@ graph TD
 This diagram represents the relational structure and how content is linked to users and teams.
 ```mermaid
 erDiagram
-    USER ||--o{ POST : "author of"
-    USER }|--|| TEAM : "member of"
-    POST ||--o{ COMMENT : "contains"
+    CUSTOM-USER ||--o{ POST : "is author of"
+    CUSTOM-USER ||--o{ COMMENT : "writes"
+    CUSTOM-USER ||--o{ LIKE : "gives"
+    TEAM ||--o{ CUSTOM-USER : "contains"
+    POST ||--o{ COMMENT : "has"
     POST ||--o{ LIKE : "receives"
-    USER ||--o{ COMMENT : "writes"
-    USER ||--o{ LIKE : "gives"
 
-    USER {
+    CUSTOM-USER {
         integer id PK
-        string email
-        string role "admin/blogger"
+        string email UK
+        boolean is_staff
+        boolean is_active
+        integer team_id FK "PROTECT"
     }
     POST {
         integer id PK
+        integer author_id FK "CASCADE"
         string title
         text content
-        string privacy_read
-        string privacy_write
+        string privacy_read "choices: public, authenticated, team, author"
+        string privacy_write "choices: authenticated, team, author"
+        datetime created_at
+        datetime updated_at
+    }
+    COMMENT {
+        integer id PK
+        integer user_id FK "CASCADE"
+        integer post_id FK "CASCADE"
+        text content
+        datetime created_at
+    }
+
+    LIKE {
+        integer id PK
+        integer user_id FK "CASCADE"
+        integer post_id FK "CASCADE"
+        datetime created_at
     }
     TEAM {
         integer id PK
@@ -190,8 +209,9 @@ Each post includes:
    
 ## API Documentation
 The API is fully documented and interactive using drf-spectacular:
-Schema (OpenAPI 3.0): /api/schema/
-Swagger UI: /api/docs/
+- OpenAPI Schema: `/api/docs/schema/`
+- Swagger UI: `/api/docs/swagger/`
+- ReDoc: `/api/docs/redoc/`
 
 ## Author
 Luisa Fernanda Alvarez Villa
